@@ -5,6 +5,7 @@
 # Usage:
 
 import sys
+from whatisit.mapping import bowtie2
 
 try:
     import argparse
@@ -20,13 +21,18 @@ except ImportError:
 		sys.exit("[Error] Exiting due to missing dependency 'argparser'")
 														        
 parser = argparse.ArgumentParser(prog=sys.argv[0], description="ADD A DESCRIPTION OF YOUR PROGRAM HERE.")
+parser.add_argument("-f", "--fastq", help="Fastq file(s) with sequence data", required=True, nargs="*")
+parser.add_argument("-r", "--references", help="Reference sequences in Fasta format", required=True)
 parser.add_argument("-v", "--verbose", action="store_true", help="Be more verbose")
 args = parser.parse_args()
 
 def main():
-	### Remove the next line and add your own code instead ###
-	print "Try '%s -h'" % sys.argv[0]
-
+	
+	# Run mapping analysis analysis
+	x = 0
+	for i in range(0, len(args.fastq), 2):
+		bowtie2(args.fastq[x], args.fastq[x+1], args.references)
+		x += 2
 
 if __name__ == "__main__":
     main()
