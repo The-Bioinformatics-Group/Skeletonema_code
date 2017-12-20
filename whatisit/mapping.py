@@ -45,15 +45,15 @@ def bowtie2(fastq1, fastq2, reference):
 				continue
 			else:
 				ref_name = line.split()[2]
-				print ref_name
-				if ref_name in mapped:
-					mapped[ref_name] += 1
+				if ref_name not in mapped:
+					mapped[ref_name] = 1
 				# ...and store unmapped reads
 				elif ref_name == "*":
+					mapped[ref_name] += 1
 					read = Fastq_read(line.split()[0], line.split()[9], line.split()[10])
 					unmapped_reads.add_seq(str(read))
 				else:
-					mapped[ref_name] = 1
+					mapped[ref_name] += 1
 		except IndexError:
 			continue
 	
