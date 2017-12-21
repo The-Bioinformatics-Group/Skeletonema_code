@@ -55,12 +55,15 @@ SAM_HEADERS = ["@HD", "@SQ", "@RG", "@PG", "@CO"]
 
 class Fastq_file(object):
 	def __init__(self, name):
-		self.name = name + ".unmapped" + ".fq"
+		self.name = files.unmapped_reads(name)
 		self.OUTHANDLE = open(self.name, "w")
 
 	# Takes a Fastq_read object as argument
 	def add_seq(self, read):
 		self.OUTHANDLE.write(read)
+
+	def close(self):
+		self.OUTHANDLE.close()
 		
 class Fastq_read(Fastq_file):
 	def __init__(self, header, seq, qual):
@@ -105,6 +108,8 @@ def bowtie2(fastq1, fastq2, reference, sam_file_name):
 					mapped[ref_name] += 1
 		except IndexError:
 			continue
+
+	unmapped_reads.close()
 	
 	print json.dumps(mapped)
 	print mapped
