@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 # -*- coding: utf-8 -*-
 
 #   Copyright (C) 2017 Mats Töpel. mats.topel@marine.gu.se
