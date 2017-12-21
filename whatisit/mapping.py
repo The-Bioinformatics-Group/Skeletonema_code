@@ -54,8 +54,8 @@ import files
 SAM_HEADERS = ["@HD", "@SQ", "@RG", "@PG", "@CO"]
 
 class Fastq_file(object):
-	def __init__(self, name):
-		self.name = files.unmapped_reads(name)
+	def __init__(self, name, interleaved):
+		self.name = files.unmapped_reads(name, interleaved)
 		self.OUTHANDLE = open(self.name, "w")
 
 	# Takes a Fastq_read object as argument
@@ -82,14 +82,16 @@ def index(reference):
 
 # Takes a pair of fastq files and a fasta file with genome references as input
 # Returns a dictioneary with the counts of mapped reads to the individual reference "species"
-def bowtie2(fastq1, fastq2, reference, sam_file_name):
+def bowtie2(fastq1, fastq2, reference, sam_file_name, interleaved = False):
 	indexed_db = files.file_name_base(reference)
 	index(reference)
-	sam = subprocess.check_output(["bowtie2", "-x", files.file_name_base(reference), "-1", fastq1, "-2", fastq2])
-
+	if interleaved == False:
+		sam = subprocess.check_output(["bowtie2", "-x", files.file_name_base(reference), "-1", fastq1, "-2", fastq2])
+	else:
+		sam = subprocess.check_output(["bowtie2", "-x", files.file_name_base(reference), "--interleaved", files.unmapped_reads(fastq1)])
 	# Count the mapped reads...
 	mapped = {}
-	unmapped_reads = Fastq_file(sam_file_name)		# Devel.
+	unmapped_reads = Fastq_file(sam_file_name, interleaved)
 	for line in sam.split("\n"):
 		# Skip SAM header lines
 		try:
@@ -102,8 +104,7 @@ def bowtie2(fastq1, fastq2, reference, sam_file_name):
 				else:
 					mapped[ref_name] += 1
 				# ...and store unmapped reads in a file
-				# NOTE: Reads are stored interleaved in the outputfile. Both singles 
-				# and paired sequences are stored in the same file.
+				# NOTE: Reads are stored interleaved in the outputfile.
 				if ref_name == "*":
 					read = Fastq_read(line.split()[0], line.split()[9], line.split()[10])
 					unmapped_reads.add_seq(str(read))
@@ -111,7 +112,7 @@ def bowtie2(fastq1, fastq2, reference, sam_file_name):
 		except IndexError:
 			continue
 	unmapped_reads.close()
-	
+
 	print json.dumps(mapped)
 	print mapped
 
