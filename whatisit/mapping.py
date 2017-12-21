@@ -99,16 +99,15 @@ def bowtie2(fastq1, fastq2, reference, sam_file_name):
 				ref_name = line.split()[2]
 				if ref_name not in mapped:
 					mapped[ref_name] = 1
+				else:
+					mapped[ref_name] += 1
 				# ...and store unmapped reads in a file
 				# NOTE: Reads are stored interleaved in the outputfile. Both singles 
 				# and paired sequences are stored in the same file.
-				elif ref_name == "*":
-					mapped[ref_name] += 1
-					print line
+				if ref_name == "*":
 					read = Fastq_read(line.split()[0], line.split()[9], line.split()[10])
 					unmapped_reads.add_seq(str(read))
-				else:
-					mapped[ref_name] += 1
+		
 		except IndexError:
 			continue
 	unmapped_reads.close()
