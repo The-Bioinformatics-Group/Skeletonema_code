@@ -72,7 +72,7 @@ class Fastq_read(Fastq_file):
 		self.qual = qual
 
 	def __str__(self):
-		self.read = self.header + "\n" + self.seq + "\n" + "+" + "\n" + self.qual + "\n"
+		self.read = "@" + self.header + "\n" + self.seq + "\n" + "+" + "\n" + self.qual + "\n"
 		return self.read
 
 # Takes a fasta file with references and creates a Bowtie2 index
@@ -100,15 +100,17 @@ def bowtie2(fastq1, fastq2, reference, sam_file_name):
 				if ref_name not in mapped:
 					mapped[ref_name] = 1
 				# ...and store unmapped reads in a file
+				# NOTE: Reads are stored interleaved in the outputfile. Both singles 
+				# and paired sequences are stored in the same file.
 				elif ref_name == "*":
 					mapped[ref_name] += 1
+					print line
 					read = Fastq_read(line.split()[0], line.split()[9], line.split()[10])
 					unmapped_reads.add_seq(str(read))
 				else:
 					mapped[ref_name] += 1
 		except IndexError:
 			continue
-
 	unmapped_reads.close()
 	
 	print json.dumps(mapped)
