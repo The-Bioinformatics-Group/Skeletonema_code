@@ -27,12 +27,11 @@ import subprocess
 import json
 import files
 
-REF = "References"
 SAM_HEADERS = ["@HD", "@SQ", "@RG", "@PG", "@CO"]
 
 class Fastq_file(object):
 	def __init__(self, name):
-		self.name = name + ".unmapped" + ".fastq"
+		self.name = name + ".unmapped" + ".fq"
 		self.OUTHANDLE = open(self.name, "w")
 
 	# Takes a Fastq_read object as argument
@@ -52,14 +51,14 @@ class Fastq_read(Fastq_file):
 # Takes a fasta file with references and creates a Bowtie2 index
 def index(reference):
 	# Check if index exists instead...
-	subprocess.call(["bowtie2-build", reference, REF])
+	subprocess.call(["bowtie2-build", reference, files.file_name_base(reference)])
 
 # Takes a pair of fastq files and a fasta file with genome references as input
 # Returns a dictioneary with the counts of mapped reads to the individual reference "species"
 def bowtie2(fastq1, fastq2, reference, sam_file_name):
 	indexed_db = files.file_name_base(reference)
 	index(reference)
-	sam = subprocess.check_output(["bowtie2", "-x", REF, "-1", fastq1, "-2", fastq2])
+	sam = subprocess.check_output(["bowtie2", "-x", files.file_name_base(reference), "-1", fastq1, "-2", fastq2])
 
 	# Count the mapped reads...
 	mapped = {}
