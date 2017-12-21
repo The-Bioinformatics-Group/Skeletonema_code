@@ -31,3 +31,6 @@
 # Takes a filename and returns it as a string without file extention
 def file_name_base(file_name):
 	return file_name.rsplit(".", 1)[0]
+
+def unmapped_reads(file_name):
+	return file_name_base(file_name) + ".unmapped" + ".fq"
