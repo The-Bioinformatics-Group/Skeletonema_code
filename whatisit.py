@@ -6,6 +6,7 @@
 
 import sys
 from whatisit.mapping import bowtie2
+from whatisit.files import file_name_base
 
 try:
     import argparse
@@ -28,10 +29,10 @@ args = parser.parse_args()
 
 def main():
 	
-	# Run mapping analysis analysis
+	# Run mapping analysis
 	x = 0
 	for i in range(0, len(args.fastq), 2):
-		bowtie2(args.fastq[x], args.fastq[x+1], args.references)
+		bowtie2(args.fastq[x], args.fastq[x+1], args.references, file_name_base(args.fastq[x]))
 		x += 2
 
 if __name__ == "__main__":
