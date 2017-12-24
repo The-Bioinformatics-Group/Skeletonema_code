@@ -48,7 +48,6 @@
 #############################################
 
 import subprocess
-import json
 import files
 
 SAM_HEADERS = ["@HD", "@SQ", "@RG", "@PG", "@CO"]
@@ -82,15 +81,22 @@ def index(reference):
 
 # Takes a pair of fastq files and a fasta file with genome references as input
 # Returns a dictioneary with the counts of mapped reads to the individual reference "species"
-def bowtie2(fastq1, fastq2, reference, sam_file_name, interleaved = False):
+def bowtie2(fastq1, fastq2, reference, sam_file_name, threads, interleaved = False, mapped = False):
 	indexed_db = files.file_name_base(reference)
-	index(reference)
-	if interleaved == False:
-		sam = subprocess.check_output(["bowtie2", "-x", files.file_name_base(reference), "-1", fastq1, "-2", fastq2])
+	# Check if indexed database is available
+	if reference + "1.bt2":
+		pass
 	else:
-		sam = subprocess.check_output(["bowtie2", "-x", files.file_name_base(reference), "--interleaved", files.unmapped_reads(fastq1)])
+		index(reference)
+	# Check if first or second alignment run
+	if interleaved == False:
+		sam = subprocess.check_output(["bowtie2", "-p", threads, "-x", files.file_name_base(reference), "-1", fastq1, "-2", fastq2])
+	else:
+		sam = subprocess.check_output(["bowtie2", "-p", threads, "-x", files.file_name_base(reference), "--interleaved", files.unmapped_reads(fastq1)])
 	# Count the mapped reads...
-	mapped = {}
+	if not mapped:
+		mapped = {}
+	
 	unmapped_reads = Fastq_file(sam_file_name, interleaved)
 	for line in sam.split("\n"):
 		# Skip SAM header lines
@@ -112,8 +118,6 @@ def bowtie2(fastq1, fastq2, reference, sam_file_name, interleaved = False):
 		except IndexError:
 			continue
 	unmapped_reads.close()
-
-	print json.dumps(mapped)
-	print mapped
+	return mapped
 
 	
