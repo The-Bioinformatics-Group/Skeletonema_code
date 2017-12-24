@@ -25,6 +25,7 @@
 # Usage: ./whatisit.py -f example/*.fastq -r example/RO5_Chloroplast.fst
 
 import sys
+import json
 from whatisit.mapping import bowtie2
 from whatisit.files import file_name_base
 
@@ -44,7 +45,8 @@ except ImportError:
 parser = argparse.ArgumentParser(prog=sys.argv[0], description="ADD A DESCRIPTION OF YOUR PROGRAM HERE.")
 parser.add_argument("-f", "--fastq", help="Fastq file(s) with sequence data", required=True, nargs="*")
 parser.add_argument("-r", "--references", help="Reference sequences in Fasta format", required=True)
-parser.add_argument("-n", "--ncbi", help="Reference sequences in Fasta format (i.e. NCBI genome db", required=True)
+parser.add_argument("-n", "--ncbi", help="Reference sequences in Fasta format (i.e. NCBI genome db")
+parser.add_argument("-p", "--threads", help="Number of alignment threads to launch", default = "1")
 parser.add_argument("-v", "--verbose", action="store_true", help="Be more verbose")
 args = parser.parse_args()
 
@@ -54,10 +56,14 @@ def main():
 	x = 0
 	for i in range(0, len(args.fastq), 2):
 		# Mapp to known references
-		bowtie2(args.fastq[x], args.fastq[x+1], args.references, file_name_base(args.fastq[x]))
+		result = bowtie2(args.fastq[x], args.fastq[x+1], args.references, file_name_base(args.fastq[x]), args.threads)
 		# Mapp to general genome references
-		bowtie2(args.fastq[x], None, args.ncbi, file_name_base(args.fastq[x]), interleaved = True)
+		if args.ncbi:
+			result = bowtie2(args.fastq[x], None, args.ncbi, file_name_base(args.fastq[x]), args.threads, interleaved = True, mapped = result)
 		x += 2
+	# Desperate hack
+	result["*"] = result["*"]/2
+	print json.dumps(result)
 
 if __name__ == "__main__":
     main()
