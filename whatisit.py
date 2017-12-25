@@ -45,7 +45,7 @@ except ImportError:
 parser = argparse.ArgumentParser(prog=sys.argv[0], description="ADD A DESCRIPTION OF YOUR PROGRAM HERE.")
 parser.add_argument("-f", "--fastq", help="Fastq file(s) with sequence data", required=True, nargs="*")
 parser.add_argument("-r", "--references", help="Reference sequences in Fasta format", required=True)
-parser.add_argument("-n", "--ncbi", help="Reference sequences in Fasta format (i.e. NCBI genome db")
+parser.add_argument("-n", "--ncbi", help="Reference sequences in Fasta format (i.e. NCBI genome db", nargs="*")
 parser.add_argument("-p", "--threads", help="Number of alignment threads to launch", default = "1")
 parser.add_argument("-v", "--verbose", action="store_true", help="Be more verbose")
 args = parser.parse_args()
@@ -58,11 +58,15 @@ def main():
 		# Mapp to known references
 		result = bowtie2(args.fastq[x], args.fastq[x+1], args.references, file_name_base(args.fastq[x]), args.threads)
 		# Mapp to general genome references
+#		result = {"Skeletonema": 1, "*": 1 }
 		if args.ncbi:
-			result = bowtie2(args.fastq[x], None, args.ncbi, file_name_base(args.fastq[x]), args.threads, interleaved = True, mapped = result)
+			for db in args.ncbi:
+			#	result = bowtie2(args.fastq[x], None, args.ncbi, file_name_base(args.fastq[x]), args.threads, interleaved = True, mapped = result)
+				result = bowtie2(args.fastq[x], None, db, file_name_base(args.fastq[x]), args.threads, interleaved = True, mapped = result)
 		x += 2
 	# Desperate hack
 	result["*"] = result["*"]/2
+
 	print json.dumps(result)
 
 if __name__ == "__main__":
