@@ -35,9 +35,9 @@ def file_name_base(file_name):
 def unmapped_reads(file_name, interleaved = False):
 	if interleaved == False:
 		# File name of first mapping analysis inhouse genomes
-		return file_name_base(file_name) + ".unmapped" + ".fq"
+		return file_name_base(file_name) + ".unmapped" + ".FASTQ"
 	else:
-		return file_name_base(file_name) + ".UNKNOWN" + ".fq"
+		return file_name_base(file_name) + ".UNKNOWN" + ".FASTQ"
 
 
 
