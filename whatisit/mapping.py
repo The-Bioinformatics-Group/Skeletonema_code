@@ -92,9 +92,16 @@ def bowtie2(fastq1, fastq2, reference, threads, interleaved = False, mapped = Fa
 #	index(reference)
 	# Check if first or second alignment run
 	if interleaved == False:
-		sam = subprocess.check_output(["bowtie2", "-p", threads, "-x", reference, "-1", fastq1, "-2", fastq2])
+		sam = subprocess.check_output(["bowtie2",\
+					       "-p", threads,\
+					       "-x", reference,\
+					       "-1", fastq1,\
+					       "-2", fastq2])
 	else:
-		sam = subprocess.check_output(["bowtie2", "-p", threads, "-x", reference, "--interleaved", files.unmapped_reads(fastq1)])
+		sam = subprocess.check_output(["bowtie2",\
+					       "-p", threads,\
+					       "-x", reference,\
+					       "--interleaved", files.unmapped_reads(fastq1)])
 	# Count the mapped reads...
 	if not mapped:
 		mapped = {}
