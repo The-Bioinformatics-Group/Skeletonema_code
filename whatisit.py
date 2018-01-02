@@ -56,14 +56,10 @@ def main():
 	x = 0
 	for i in range(0, len(args.fastq), 2):
 		# Mapp to known references
-#		result = bowtie2(args.fastq[x], args.fastq[x+1], args.references, file_name_base(args.fastq[x]), args.threads)
 		result = bowtie2(args.fastq[x], args.fastq[x+1], args.references, args.threads)
 		# Mapp to general genome references
-#		result = {"Skeletonema": 1, "*": 1 }
 		if args.ncbi:
 			for db in args.ncbi:
-			#	result = bowtie2(args.fastq[x], None, args.ncbi, file_name_base(args.fastq[x]), args.threads, interleaved = True, mapped = result)
-#				result = bowtie2(args.fastq[x], None, db, file_name_base(args.fastq[x]), args.threads, interleaved = True, mapped = result)
 				result = bowtie2(args.fastq[x], None, db, args.threads, interleaved = True, mapped = result)
 		x += 2
 	# Desperate hack
