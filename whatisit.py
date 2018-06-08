@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 #	Copyright (C) 2017 Mats Töpel. mats.topel@marine.gu.se
@@ -46,6 +46,7 @@ parser = argparse.ArgumentParser(prog=sys.argv[0], description="ADD A DESCRIPTIO
 parser.add_argument("-f", "--fastq", help="Fastq file(s) with sequence data", required=True, nargs="*")
 parser.add_argument("-r", "--references", help="Reference sequences in Fasta format", required=True, nargs="*")
 parser.add_argument("-n", "--ncbi", help="Reference sequences in Fasta format (i.e. NCBI genome db", nargs="*")
+parser.add_argument("--output_reads", help="Store the reads not mapping to the reference", default = False)
 parser.add_argument("-p", "--threads", help="Number of alignment threads to launch", default = "1")
 parser.add_argument("-v", "--verbose", action="store_true", help="Be more verbose")
 args = parser.parse_args()
@@ -57,11 +58,11 @@ def main():
 	for i in range(0, len(args.fastq), 2):
 		# Mapp to known references
 		for db in args.references:
-			result = bowtie2(args.fastq[x], args.fastq[x+1], db, args.threads)
+			result = bowtie2(args.fastq[x], args.fastq[x+1], db, args.threads, args.output_reads)
 		# Mapp to general genome references
-		if args.ncbi:
-			for db in args.ncbi:
-				result = bowtie2(args.fastq[x], None, db, args.threads, interleaved = True, mapped = result)
+#		if args.ncbi:
+#			for db in args.ncbi:
+#				result = bowtie2(args.fastq[x], None, db, args.threads, interleaved = True, mapped = result, args.output_reads)
 		x += 2
 	# Desperate hack
 	result["*"] = result["*"]/2
