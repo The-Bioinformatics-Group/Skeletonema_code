@@ -22,3 +22,17 @@ def download_ncbi_bact_genomes():
 
 	# 6. Concatenate data
 	cat *.fna > all_complete_Gb_bac.fasta
+
+	### Virus ###
+
+	# 1. Get the list of assemblies:
+	wget ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/viral/assembly_summary.txt
+
+	# 2. Parse the addresses of complete genomes from it (right now n = 4,804):
+	awk -F '\t' '{if($12=="Complete Genome") print $20}' assembly_summary.txt > assembly_summary_complete_genomes.txt
+
+
+
+def create_databases():
+
+	# 1. for i in $(ls *.fna); do bowtie2-build $i $i; done
