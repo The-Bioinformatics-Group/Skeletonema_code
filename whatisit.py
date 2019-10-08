@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 #	Copyright (C) 2017 Mats Töpel. mats.topel@marine.gu.se
@@ -65,9 +65,10 @@ def main():
 #				result = bowtie2(args.fastq[x], None, db, args.threads, interleaved = True, mapped = result, args.output_reads)
 		x += 2
 	# Desperate hack
-	result["*"] = result["*"]/2
+#	result["*"] = result["*"]/2
 
-	print json.dumps(result)
+#	print(json.dumps(result))
+#	print(result)
 
 if __name__ == "__main__":
     main()
