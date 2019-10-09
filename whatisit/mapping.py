@@ -48,37 +48,9 @@
 #############################################
 
 import subprocess
-#import files
 import sys
 import os 
 
-
-#SAM_HEADERS = ["@HD", "@SQ", "@RG", "@PG", "@CO"]
-
-#class Fastq_file(object):
-#	def __init__(self, name, interleaved, store_reads):
-#		self.name = files.unmapped_reads(name, interleaved)
-#		if store_reads == True:
-#			self.OUTHANDLE = open(self.name, "w")
-#		else:
-#			self.OUTHANDLE = open("/dev/null", "w")
-#
-#	# Takes a Fastq_read object as argument
-#	def add_seq(self, read):
-#		self.OUTHANDLE.write(read)
-#
-#	def close(self):
-#		self.OUTHANDLE.close()
-#		
-#class Fastq_read(Fastq_file):
-#	def __init__(self, header, seq, qual):
-#		self.header = header
-#		self.seq = seq
-#		self.qual = qual
-#
-#	def __str__(self):
-#		self.read = "@" + self.header + "\n" + self.seq + "\n" + "+" + "\n" + self.qual + "\n"
-#		return self.read
 
 # Takes a fasta file with references and creates a Bowtie2 index
 def index(reference):
@@ -100,26 +72,11 @@ def bowtie2(fastq1, fastq2, reference, threads, store_reads, interleaved = False
 	FNULL = open(os.devnull, 'w')
 
 	if interleaved == False:
-#		sam = subprocess.call(["bowtie2",\
-#		sam = subprocess.check_output(["bowtie2",\
 		sam = subprocess.Popen(["bowtie2",\
 					       "-p", threads,\
 					       "-x", reference,\
 					       "-1", fastq1,\
 					       "-2", fastq2], stderr=subprocess.PIPE, stdout=FNULL)
-#					       "-2", fastq2], stderr=subprocess.STDOUT)
-#					       "-2", fastq2])
-#	else:
-#		sam = subprocess.check_output(["bowtie2",\
-#		print "Opening %s" % files.unmapped_reads(fastq1)
-#		print os.path.getsize("1.unmapped.FASTQ")
-#		print os.path.getsize("%s" % files.unmapped_reads(fastq1))
-#		sam = subprocess.Popen(["bowtie2",\
-#					       "-p", threads,\
-#					       "-x", reference,\
-#					       "--interleaved", files.unmapped_reads(fastq1)], stdout=subprocess.PIPE)
-		
-#	print(sam.stderr)
 	bowtie_stderr = sam.communicate()[1]
 	for line in bowtie_stderr.decode("utf-8").split("\n"):
 		if "aligned concordantly exactly 1 time" in line:
@@ -133,51 +90,4 @@ def bowtie2(fastq1, fastq2, reference, threads, store_reads, interleaved = False
 		elif "aligned >1 times" in line:
 			multimap = line.split()[0]
 			
-	print(os.path.basename(reference), "\t", exact, "\t", multimap)		
-#		print(line)
-#	bowtie_stderr = sam.communicate()[1]
-#	print(bowtie_stderr) 
-	mapped = "asdf"
-
-
-#	# Count the mapped reads...
-#	if not mapped:
-#		mapped = {}
-#	
-#	unmapped = Fastq_file(fastq1, interleaved, store_reads)
-#
-#	for line in iter(sam.stdout.readline,''):
-#	for line in sam.stdout:
-#	for line in sam.split("\n"):
-#		# Skip SAM header lines
-#		try:
-#			if line[0:3] in SAM_HEADERS:
-#				continue
-#			else:
-#				ref_name = line.split()[2]
-#				if ref_name not in mapped:
-#					mapped[ref_name] = 1
-#				else:
-#					mapped[ref_name] += 1
-#				# ...and store unmapped reads in a file
-#				# NOTE: Reads are stored interleaved in the outputfile.
-#				if ref_name == "*":
-#					read = Fastq_read(line.split()[0], line.split()[9], line.split()[10])
-#					unmapped.add_seq(str(read))
-#		
-#		except IndexError:
-#			continue
-
-#	sys.stdout.flush()
-##	print os.path.getsize("1.unmapped.FASTQ")
-##	print "Closing sam"
-#	sam.stdout.close()
-##	print os.path.getsize("1.unmapped.FASTQ")
-##	print "Closing file"
-#	unmapped.close()
-##	print os.path.getsize("1.unmapped.FASTQ")
-##	if args.verbose:
-##	print mapped
-	return mapped
-
-	
+	print(os.path.basename(reference), "\t", concord_1, "\t", concord_2, "\t", discord, "\t", exact, "\t", multimap)
