@@ -25,23 +25,10 @@
 # Usage: ./whatisit.py -f example/*.fastq -r example/RO5_Chloroplast.fst
 
 import sys
-import json
 from whatisit.mapping import bowtie2
 from whatisit.files import file_name_base
+import argparse
 
-try:
-    import argparse
-except ImportError:
-	sys.stderr.write("[Error] The python module 'argparse' is not installed\n")
-	sys.stderr.write("[--] Would you like to install it now using 'sudo easy_install' [Y/N]? ")
-	answer = sys.stdin.readline()
-	if answer[0].lower() == "y":
-		sys.stderr.write("[--] Running 'sudo easy_install argparse'\n")
-		from subprocess import call
-		call(["sudo", "easy_install", "argparse"])
-	else:
-		sys.exit("[Error] Exiting due to missing dependency 'argparser'")
-														        
 parser = argparse.ArgumentParser(prog=sys.argv[0], description="ADD A DESCRIPTION OF YOUR PROGRAM HERE.")
 parser.add_argument("-f", "--fastq", help="Fastq file(s) with sequence data", required=True, nargs="*")
 parser.add_argument("-r", "--references", help="Reference sequences in Fasta format", required=True, nargs="*")
@@ -56,19 +43,10 @@ def main():
 	# Run analysis
 	x = 0
 	for i in range(0, len(args.fastq), 2):
-		# Mapp to known references
+		# Mapp to references
 		for db in args.references:
-			result = bowtie2(args.fastq[x], args.fastq[x+1], db, args.threads, args.output_reads)
-		# Mapp to general genome references
-#		if args.ncbi:
-#			for db in args.ncbi:
-#				result = bowtie2(args.fastq[x], None, db, args.threads, interleaved = True, mapped = result, args.output_reads)
+			bowtie2(args.fastq[x], args.fastq[x+1], db, args.threads, args.output_reads)
 		x += 2
-	# Desperate hack
-#	result["*"] = result["*"]/2
-
-#	print(json.dumps(result))
-#	print(result)
 
 if __name__ == "__main__":
     main()
