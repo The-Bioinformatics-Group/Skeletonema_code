@@ -79,15 +79,30 @@ def bowtie2(fastq1, fastq2, reference, threads, store_reads, interleaved = False
 					       "-2", fastq2], stderr=subprocess.PIPE, stdout=FNULL)
 	bowtie_stderr = sam.communicate()[1]
 	for line in bowtie_stderr.decode("utf-8").split("\n"):
-		if "aligned concordantly exactly 1 time" in line:
-			concord_1 = line.split()[0]
+		if "reads; of these:" in line:
+			number_of_reads = int(line.split()[0])
+		elif "aligned concordantly exactly 1 time" in line:
+			concord_1 = int(line.split()[0])
 		elif "aligned concordantly >1 times" in line:
-			concord_2 = line.split()[0]
+			concord_2 = int(line.split()[0])
 		elif "aligned discordantly 1 time" in line:
-			discord = line.split()[0]
+			discord = int(line.split()[0])
 		elif "aligned exactly 1 time" in line:
-			exact = line.split()[0]
+			exact = int(line.split()[0])
 		elif "aligned >1 times" in line:
-			multimap = line.split()[0]
+			multimap = int(line.split()[0])
+		elif "overall alignment rate" in line:
+			overall = float(line.split("%")[0])
 			
-	print(os.path.basename(reference), "\t", concord_1, "\t", concord_2, "\t", discord, "\t", exact, "\t", multimap)
+	print(os.path.basename(reference), "\t", \
+			       concord_1, "\t", \
+			       concord_2, "\t", \
+			       discord, "\t", \
+			       exact, "\t", \
+			       multimap, "\t", \
+			       round(concord_1/number_of_reads, 3), "\t", \
+			       round(concord_2/number_of_reads, 3), "\t", \
+			       round(discord/number_of_reads, 3), "\t", \
+			       round(exact/(number_of_reads * 2), 3), "\t", \
+			       round(multimap/(number_of_reads * 2), 3), "\t", \
+			       overall, sep="")
